@@ -50,6 +50,14 @@ export const mockFolders: Folder[] = [
         parent: "root",
         size: "0 B",
     },
+    {
+        type: "folder",
+        id: "4",
+        name: "Presentations",
+        owner: "You",
+        parent: "3",
+        size: "0 B",
+    },
 ]
 
 export const mockFiles: File[] = [

@@ -51,6 +51,11 @@ export default function Component() {
   }
 
   const navigateToFolder = (folderId: string) => {
+    if (folderId === "root") {
+      setCurrentFolder("root")
+      setCurrentItems(getCurrentFiles())
+      return
+    }
     setCurrentFolder(folderId)
     setCurrentItems(getCurrentFiles())
   }
@@ -59,7 +64,7 @@ export default function Component() {
     const breadCrumbs = []
     let currentId = currentFolder;
 
-    while (currentId !== null) {
+    while (currentId !== "root") {
       const folder = mockFolders.find((folder) => folder.id === currentFolder)
       if (folder) {
         breadCrumbs.unshift(folder)
@@ -184,7 +189,7 @@ export default function Component() {
                 >
                   {path.name}
                 </button>
-                {index < getCurrentFolder().length - 1 && (
+                {index < breadcrumbs.length - 1 && (
                   <ChevronRight className={`w-4 h-4 ${theme === "dark" ? "text-gray-500" : "text-gray-400"}`} />
                 )}
               </div>
