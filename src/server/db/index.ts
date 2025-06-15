@@ -1,9 +1,11 @@
-import { drizzle } from "drizzle-orm/singlestore";
 import { createPool, type Pool } from "mysql2/promise";
+import { drizzle } from "drizzle-orm/singlestore";
 
 import { env } from "~/env";
 import * as schema from "./schema";
 
+// const pool = createPool(env.SINGLESTORE_CONN_STRING);
+// const db = drizzle(pool, { schema });
 /**
  * Cache the database connection in development. This avoids creating a new connection on every HMR
  * update.
