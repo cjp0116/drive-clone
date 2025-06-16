@@ -11,21 +11,15 @@ export default function SandboxPage() {
                 "use server";
 
                 const insertedFolders = await db.insert(folders).values(
-                    mockFolders.map((folder, index) => ({
-                    ...folder,
-                    id: parseInt(folder.id),
-                    parent: Number.isNaN(parseInt(folder.parent)) ?? 1,
-                    size: folder.size ? parseInt(folder.size) : 5000,
-                })));
+                    mockFolders.map((folder) => ({
+                        ...folder,
+                 
+                    })));
                 console.log("Inserted folders:", insertedFolders);
 
-                const insertedFiles = await db.insert(files).values(mockFiles.map((file, index) => ({
+                const insertedFiles = await db.insert(files).values(mockFiles.map((file) => ({
                     ...file,
-                    id: parseInt(file.id),
-                    parent:  parseInt(file.parent),
-                    size: file.size ? parseInt(file.size) : 5000,
-                    url: file.url ?? "",
-                    modified: new Date(),
+             
                 })));
                 console.log("Inserted files:", insertedFiles);
 

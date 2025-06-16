@@ -1,41 +1,25 @@
-import { db } from "~/server/db"
-import { files as filesSchema, folders as foldersSchema } from "~/server/db/schema";
 import DriveContents from "~/components/google-drive-clone"
-import { eq } from "drizzle-orm";
+import { QUERIES } from "~/server/db/queries";
 
-export default async function Page(props: { params: Promise<{ folderId: number }>; }) {
+
+export default async function Page(props: { params: Promise<{ folderId: string }>; }) {
     const params = await props.params;
-    const parsedFolderId = parseInt(params.folderId);
-
-    if(isNaN(parsedFolderId)) {
+    
+    const parsedFolderId = Number(params.folderId);
+    if (isNaN(parsedFolderId)) {
         return <div>Invalid Folder ID</div>
     }
+    const parentsPromise = QUERIES.getAllParentsForFolder(parsedFolderId);
+    const filesPromise = QUERIES.getFiles(parsedFolderId);
+    const foldersPromise = QUERIES.getFolders(parsedFolderId);
 
-    // const safeParams = z.object({
-    //     folderId: z.string().transform((val, ctx) => {
-    //         const parsed = parseInt(val);
-    //         if (isNaN(parsed)) {
-    //             ctx.addIssue({
-    //                 code: z.ZodIssueCode.custom,
-    //                 message: "Invalid Number",
-    //             });
-    //             return z.NEVER;
-    //         }
-    //         return parsed;
-    //     })
-    // })
+    const [files, folders, parents] = await Promise.all([filesPromise, foldersPromise, parentsPromise]);
 
-    const files = await db
-        .select()
-        .from(filesSchema)
-        .where(eq(filesSchema.parent, parsedFolderId));
-    
-    const folders = await db
-        .select()
-        .from(foldersSchema)
-        .where(eq(foldersSchema.parent, parsedFolderId));
-    
     return (
-        <DriveContents files={files} folders={folders} />
+        <DriveContents
+            files={files}
+            folders={folders}
+            parents={parents}
+        />
     )
 };
