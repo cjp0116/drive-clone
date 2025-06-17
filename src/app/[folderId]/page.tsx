@@ -1,25 +1,29 @@
-import DriveContents from "~/components/google-drive-clone"
+import DriveContents from "~/components/drive-interface"
 import { QUERIES } from "~/server/db/queries";
-
+// import { convertToUIFormat } from "~/lib/mockData";
 
 export default async function Page(props: { params: Promise<{ folderId: string }>; }) {
     const params = await props.params;
-    
-    const parsedFolderId = Number(params.folderId);
+
+    const parsedFolderId = parseInt(params.folderId);
     if (isNaN(parsedFolderId)) {
-        return <div>Invalid Folder ID</div>
+        return <div>Invalid folder ID</div>;
     }
-    const parentsPromise = QUERIES.getAllParentsForFolder(parsedFolderId);
-    const filesPromise = QUERIES.getFiles(parsedFolderId);
-    const foldersPromise = QUERIES.getFolders(parsedFolderId);
 
-    const [files, folders, parents] = await Promise.all([filesPromise, foldersPromise, parentsPromise]);
+    const [folders, files, parents] = await Promise.all([
+        QUERIES.getFolders(parsedFolderId),
+        QUERIES.getFiles(parsedFolderId),
+        QUERIES.getAllParentsForFolder(parsedFolderId),
+    ]);
 
+    // const data = convertToUIFormat(files);
+  
     return (
         <DriveContents
             files={files}
             folders={folders}
             parents={parents}
+            currentPath={["My Drive", ...parents.map(parent => parent.name)]}
         />
     )
 };
