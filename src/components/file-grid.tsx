@@ -7,10 +7,12 @@ interface FileGridProps {
   items: FileItem[]
   selectedItems: Set<string>
   onItemSelect: (id: string, selected: boolean) => void
+  onItemClick: (item: FileItem) => void
   isDarkMode: boolean
 }
 
-export default function FileGrid({ items, selectedItems, onItemSelect, isDarkMode }: FileGridProps) {
+
+export default function FileGrid({ items, selectedItems, onItemSelect, onItemClick, isDarkMode }: FileGridProps) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
       {items.map((item) => (
@@ -19,6 +21,7 @@ export default function FileGrid({ items, selectedItems, onItemSelect, isDarkMod
           item={item}
           isSelected={selectedItems.has(item.id)}
           onSelect={(selected) => onItemSelect(item.id, selected)}
+          onClick={() => onItemClick(item)}
           isDarkMode={isDarkMode}
         />
       ))}

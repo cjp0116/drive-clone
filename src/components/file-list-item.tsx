@@ -11,18 +11,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu"
-import type { FileItem } from "~/lib/mockData"
-import { getFileIcon } from "~/components/ui/icons";
-import Link from 'next/link';
+import type { FileItem } from "~/lib/mockData";
+import { getFileIcon } from "~/context/themeProvider"
 
 interface FileListItemProps {
   item: FileItem
   isSelected: boolean
   onSelect: (selected: boolean) => void
+  onClick: () => void
   isDarkMode: boolean
 }
 
-export default function FileListItem({ item, isSelected, onSelect, isDarkMode }: FileListItemProps) {
+export default function FileListItem({ item, isSelected, onSelect, onClick, isDarkMode }: FileListItemProps) {
   const [isHovered, setIsHovered] = useState(false)
 
   const handleRowClick = (e: React.MouseEvent) => {
@@ -32,6 +32,7 @@ export default function FileListItem({ item, isSelected, onSelect, isDarkMode }:
     ) {
       return
     }
+    onClick()
   }
 
   const handleCheckboxChange = (checked: boolean) => {
@@ -39,14 +40,14 @@ export default function FileListItem({ item, isSelected, onSelect, isDarkMode }:
   }
 
   return (
-    <Link href={item.type === "folder" ? `/${item.id}` : ``}
+    <div
       className={`grid grid-cols-12 gap-4 px-4 py-3 rounded cursor-pointer group transition-all duration-200 ease-in-out relative ${isSelected
-        ? isDarkMode
-          ? "bg-blue-900 hover:bg-blue-800"
-          : "bg-blue-50 hover:bg-blue-100"
-        : isDarkMode
-          ? "hover:bg-gray-800"
-          : "hover:bg-gray-100"
+          ? isDarkMode
+            ? "bg-blue-900 hover:bg-blue-800"
+            : "bg-blue-50 hover:bg-blue-100"
+          : isDarkMode
+            ? "hover:bg-gray-800"
+            : "hover:bg-gray-100"
         }`}
       onClick={handleRowClick}
       onMouseEnter={() => setIsHovered(true)}
@@ -82,7 +83,7 @@ export default function FileListItem({ item, isSelected, onSelect, isDarkMode }:
           className={`text-sm transition-colors duration-300 ease-in-out ${isDarkMode ? "text-gray-400" : "text-gray-600"
             }`}
         >
-          {item.ownerId}
+          {item.owner}
         </span>
       </div>
       <div className="col-span-2 flex items-center">
@@ -95,9 +96,10 @@ export default function FileListItem({ item, isSelected, onSelect, isDarkMode }:
       </div>
       <div className="col-span-2 flex items-center justify-between">
         <span
-          className={`text-sm transition-colors duration-300 ease-in-out ${isDarkMode ? "text-gray-400" : "text-gray-600"}`}
+          className={`text-sm transition-colors duration-300 ease-in-out ${isDarkMode ? "text-gray-400" : "text-gray-600"
+            }`}
         >
-          {item.size ?? "—"}
+          {item.size || "—"}
         </span>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -155,6 +157,6 @@ export default function FileListItem({ item, isSelected, onSelect, isDarkMode }:
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-    </Link>
+    </div>
   )
 }

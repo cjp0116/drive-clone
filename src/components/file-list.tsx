@@ -11,7 +11,8 @@ interface FileListProps {
   isDarkMode: boolean
 }
 
-export default function FileList({ items, selectedItems, onItemSelect,  isDarkMode }: FileListProps) {
+
+export default function FileList({ items, selectedItems, onItemSelect, onItemClick, isDarkMode }: FileListProps) {
   return (
     <div className="space-y-1">
       <div
@@ -29,7 +30,7 @@ export default function FileList({ items, selectedItems, onItemSelect,  isDarkMo
           item={item}
           isSelected={selectedItems.has(item.id)}
           onSelect={(selected) => onItemSelect(item.id, selected)}
-          
+          onClick={() => onItemClick(item)}
           isDarkMode={isDarkMode}
         />
       ))}

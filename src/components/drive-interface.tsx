@@ -3,25 +3,40 @@
 import { useState } from "react"
 import { Folder } from "lucide-react"
 
-import  Header  from "./header"
-import  Breadcrumb  from "./breadCrumbs"
-import  Toolbar  from "./ui/Toolbar"
-import  GroupActions  from "./group-actions"
-import  FileGrid  from "./file-grid"
-import  FileList  from "./file-list"
+import Header from "./header"
+import Breadcrumb from "./breadCrumbs"
+import Toolbar from "./ui/Toolbar"
+import GroupActions from "./group-actions"
+import FileGrid from "./file-grid"
+import FileList from "./file-list"
 import { useTheme } from "~/context/themeProvider";
+import type { FileItem } from "~/lib/mockData";
+import { useRouter } from "next/navigation";
+
+interface PathItem {
+  name: string;
+  id: number;
+}
+
+interface DriveInterfaceProps {
+  items: FileItem[];
+  path: PathItem[];
+}
+
 export default function DriveInterface({
-  files,
-  folders,
-  parents,
-  currentPath
-}) {
-  const { isDarkMode, toggleTheme } = useTheme();
+  items,
+  path
+}: DriveInterfaceProps) {
+  const [currentPath, setCurrentPath] = useState<PathItem[]>(path);
+  const [currentItems, setCurrentItems] = useState<FileItem[]>(items);
   const [viewMode, setViewMode] = useState<"grid" | "list">("list")
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set())
 
-  console.log(files);
+  const { toggleTheme, theme } = useTheme();
+  const isDarkMode = theme === "dark";
+  const router = useRouter();
+
   const handleItemSelect = (id: string, selected: boolean) => {
     const newSelectedItems = new Set(selectedItems)
     if (selected) {
@@ -32,11 +47,42 @@ export default function DriveInterface({
     setSelectedItems(newSelectedItems)
   }
 
+  const navigateToFolder = (folder: FileItem) => {
+    if (folder.type === 'folder') {
+      setCurrentPath(currentPath => [...currentPath, { name: folder.name, id: Number(folder.id) }])
+      router.push(`/${folder.id}`)
+    } else {
+      console.error("Cannot navigate to a file")
+    }
+  }
+
+  const navigateBack = (folderId: number) => {
+    const currentIndex = currentPath.findIndex(item => item.id === folderId);
+    if (currentIndex === -1) {
+      // If we can't find the folder, go to root
+      router.push('/1');
+      setCurrentPath([{ name: 'Root', id: 1 }]);
+    } else {
+      // Update the path to only include items up to the clicked folder
+      const newPath = currentPath.slice(0, currentIndex + 1);
+      setCurrentPath(newPath);
+      router.push(`/${folderId}`);
+    }
+  }
+
+  const handleItemClick = (item: FileItem) => {
+    if (item.type === "folder") {
+      navigateToFolder(item)
+    } else {
+      window.open(item.url, "_blank")
+    }
+  }
+
   const clearSelection = () => {
     setSelectedItems(new Set())
   }
 
-  const filteredItems = files.filter((item) => item.name.toLowerCase().includes(searchQuery.toLowerCase()))
+  const filteredItems = currentItems?.filter((item) => item.name.toLowerCase().includes(searchQuery.toLowerCase()))
   return (
     <div
       className={`flex h-screen transition-colors duration-300 ease-in-out ${isDarkMode ? "bg-gray-900" : "bg-gray-50"}`}
@@ -44,15 +90,15 @@ export default function DriveInterface({
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         <Header
-          isDarkMode={isDarkMode}
           toggleTheme={toggleTheme}
+          isDarkMode={isDarkMode}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
         />
 
         <Breadcrumb
-          currentPath={parents}
-          // onNavigateBack={navigateBack}
+          currentPath={currentPath}
+          onNavigateBack={navigateBack}
           isDarkMode={isDarkMode}
         />
 
@@ -79,15 +125,21 @@ export default function DriveInterface({
               items={filteredItems}
               selectedItems={selectedItems}
               onItemSelect={handleItemSelect}
+              onItemClick={handleItemClick}
               isDarkMode={isDarkMode}
             />
+
           ) : (
+
             <FileList
               items={filteredItems}
               selectedItems={selectedItems}
               onItemSelect={handleItemSelect}
+              onItemClick={handleItemClick}
               isDarkMode={isDarkMode}
             />
+
+
           )}
 
           {filteredItems.length === 0 && (

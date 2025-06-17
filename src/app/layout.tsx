@@ -24,13 +24,13 @@ export default function RootLayout({
 
   return (
     <ClerkProvider>
-      <ThemeProvider>
-        <html lang="en" className={`${geist.variable}`}>
+      <html lang="en" className={`${geist.variable}`}>
+        <ThemeProvider>
           <body>
             {children}
           </body>
-        </html>
-      </ThemeProvider>
+        </ThemeProvider>
+      </html>
     </ClerkProvider>
   );
 }

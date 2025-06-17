@@ -18,7 +18,7 @@ export interface File {
     parent: number
 }
 
-export interface FileSystemItem {
+export interface    FileSystemItem {
     id: number
     name: string
     type: "folder" | "file"
