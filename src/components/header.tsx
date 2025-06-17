@@ -5,7 +5,13 @@ import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import Link from 'next/link';
-
+import {
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from '@clerk/nextjs'
 interface HeaderProps {
   isDarkMode: boolean
   toggleTheme: (value: boolean) => void
@@ -47,6 +53,7 @@ export default function Header({ isDarkMode, toggleTheme, searchQuery, setSearch
         </div>
       </div>
 
+
       <div className="flex items-center gap-2">
         <Button
           variant="ghost"
@@ -79,6 +86,15 @@ export default function Header({ isDarkMode, toggleTheme, searchQuery, setSearch
         >
           <HelpCircle className="w-4 h-4" />
         </Button>
+
+        <SignedOut>
+          <SignInButton />
+          <SignUpButton />
+        </SignedOut>
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
+        
         <Avatar className="w-8 h-8">
           <AvatarImage src="/placeholder-user.jpg" alt="User" />
           <AvatarFallback
